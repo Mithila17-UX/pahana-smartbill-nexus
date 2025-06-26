@@ -72,7 +72,7 @@ export const ItemManagement: React.FC = () => {
       status: 'active',
       lastUpdated: '2024-03-12'
     }
-  ];
+  ]);
 
   const filteredItems = items.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

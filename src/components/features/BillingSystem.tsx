@@ -78,7 +78,7 @@ export const BillingSystem: React.FC = () => {
       status: 'draft',
       date: '2024-03-13'
     }
-  ];
+  ]);
 
   const filteredBills = bills.filter(bill =>
     bill.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
