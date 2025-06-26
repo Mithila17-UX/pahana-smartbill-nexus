@@ -1,17 +1,23 @@
 
 import React, { useState } from 'react';
 import { useAuth } from './AuthProvider';
+import { RegistrationForm } from './RegistrationForm';
+import { OTPVerification } from './OTPVerification';
 import { Eye, EyeOff, Mail, Lock, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 
+type AuthView = 'login' | 'register' | 'otp' | 'forgot-password';
+
 export const LoginForm: React.FC = () => {
+  const [currentView, setCurrentView] = useState<AuthView>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
   const { login } = useAuth();
   const { toast } = useToast();
 
@@ -43,6 +49,49 @@ export const LoginForm: React.FC = () => {
       description: "Google OAuth integration would be implemented here",
     });
   };
+
+  const handleForgotPassword = () => {
+    setCurrentView('forgot-password');
+  };
+
+  const handleForgotPasswordSubmit = (email: string) => {
+    toast({
+      title: "Reset Link Sent",
+      description: `Password reset instructions have been sent to ${email}`,
+    });
+    setCurrentView('login');
+  };
+
+  const handleRegistrationComplete = (email: string) => {
+    setUserEmail(email);
+    setCurrentView('otp');
+  };
+
+  const handleOTPVerificationSuccess = () => {
+    toast({
+      title: "Account Verified",
+      description: "You can now log in to your account.",
+    });
+    setCurrentView('login');
+  };
+
+  if (currentView === 'register') {
+    return <RegistrationForm />;
+  }
+
+  if (currentView === 'otp') {
+    return (
+      <OTPVerification
+        email={userEmail}
+        onVerificationSuccess={handleOTPVerificationSuccess}
+        onBack={() => setCurrentView('register')}
+      />
+    );
+  }
+
+  if (currentView === 'forgot-password') {
+    return <ForgotPasswordForm onSubmit={handleForgotPasswordSubmit} onBack={() => setCurrentView('login')} />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -105,6 +154,16 @@ export const LoginForm: React.FC = () => {
               </div>
             </div>
 
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400"
+              >
+                Forgot password?
+              </button>
+            </div>
+
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
@@ -136,12 +195,85 @@ export const LoginForm: React.FC = () => {
             </Button>
           </div>
 
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?{' '}
+              <button
+                onClick={() => setCurrentView('register')}
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium"
+              >
+                Sign up
+              </button>
+            </p>
+          </div>
+
           <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
             <p>Demo credentials:</p>
             <p><strong>Admin:</strong> admin / password</p>
             <p><strong>Employee:</strong> employee / password</p>
             <p><strong>Customer:</strong> customer / password</p>
           </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const ForgotPasswordForm: React.FC<{ onSubmit: (email: string) => void; onBack: () => void }> = ({ onSubmit, onBack }) => {
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    onSubmit(email);
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <Card className="w-full max-w-md shadow-xl">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Reset Password
+          </CardTitle>
+          <CardDescription>
+            Enter your email to receive password reset instructions
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Email Address
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+            </div>
+
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Sending..." : "Send Reset Link"}
+            </Button>
+
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onBack}
+              className="w-full"
+            >
+              Back to Login
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>
