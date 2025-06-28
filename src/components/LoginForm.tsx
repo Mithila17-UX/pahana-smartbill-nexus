@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { RegistrationForm } from './RegistrationForm';
@@ -76,7 +75,7 @@ export const LoginForm: React.FC = () => {
   };
 
   if (currentView === 'register') {
-    return <RegistrationForm />;
+    return <RegistrationForm onBackToLogin={() => setCurrentView('login')} />;
   }
 
   if (currentView === 'otp') {

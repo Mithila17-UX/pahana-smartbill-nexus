@@ -1,14 +1,17 @@
-
 import React, { useState } from 'react';
 import { useAuth } from './AuthProvider';
-import { Eye, EyeOff, User, Mail, Lock, Phone, UserCheck } from 'lucide-react';
+import { Eye, EyeOff, User, Mail, Lock, Phone, UserCheck, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
-export const RegistrationForm: React.FC = () => {
+interface RegistrationFormProps {
+  onBackToLogin?: () => void;
+}
+
+export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBackToLogin }) => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -224,6 +227,19 @@ export const RegistrationForm: React.FC = () => {
               {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Already have an account?{' '}
+              <button
+                onClick={onBackToLogin}
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium"
+              >
+                <ArrowLeft className="w-3 h-3 inline mr-1" />
+                Back to Sign In
+              </button>
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

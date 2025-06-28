@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { User, Mail, Phone, Shield, Save, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -56,7 +55,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onBack }) => {
       default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
     }
   };
-
+  
   if (!user) return null;
 
   return (
