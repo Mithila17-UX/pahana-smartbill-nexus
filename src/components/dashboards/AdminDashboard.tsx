@@ -1,16 +1,19 @@
 
 import React, { useState } from 'react';
-import { Users, Package, FileText, BarChart3, Settings, DollarSign, TrendingUp, ShoppingCart } from 'lucide-react';
+import { Users, Package, FileText, BarChart3, Settings, DollarSign, TrendingUp, ShoppingCart, Clock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { CustomerManagement } from '../features/CustomerManagement';
 import { ItemManagement } from '../features/ItemManagement';
 import { BillingSystem } from '../features/BillingSystem';
 import { BillingForm } from '../features/BillingForm';
 import { ReportsSection } from '../features/ReportsSection';
+import { ActivityFeedModal } from '../ActivityFeedModal';
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
 
   const stats = [
     { title: 'Total Customers', value: '1,234', icon: Users, color: 'text-blue-600', change: '+12%' },
@@ -96,8 +99,16 @@ export const AdminDashboard: React.FC = () => {
           {/* Recent Activity */}
           <Card>
             <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Latest system activities and transactions</CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Recent Activity</CardTitle>
+                  <CardDescription>Latest system activities and transactions</CardDescription>
+                </div>
+                <Button onClick={() => setIsActivityModalOpen(true)}>
+                  <Clock className="w-4 h-4 mr-2" />
+                  View All Activities
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -107,7 +118,11 @@ export const AdminDashboard: React.FC = () => {
                   { action: 'Item updated', user: 'Admin', time: '1 hour ago', icon: Package },
                   { action: 'Report generated', user: 'Admin', time: '2 hours ago', icon: BarChart3 }
                 ].map((activity, index) => (
-                  <div key={index} className="flex items-center space-x-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                  <div 
+                    key={index} 
+                    className="flex items-center space-x-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                    onClick={() => setIsActivityModalOpen(true)}
+                  >
                     <activity.icon className="w-5 h-5 text-gray-600" />
                     <div className="flex-1">
                       <p className="text-sm font-medium">{activity.action}</p>
@@ -141,6 +156,13 @@ export const AdminDashboard: React.FC = () => {
           <ReportsSection />
         </TabsContent>
       </Tabs>
+
+      {/* Activity Feed Modal */}
+      <ActivityFeedModal 
+        isOpen={isActivityModalOpen}
+        onClose={() => setIsActivityModalOpen(false)}
+        activity={null}
+      />
     </div>
   );
 };
